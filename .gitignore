@@ -7,9 +7,9 @@ impl/nl/include/*.h
 
 
 
-basic.accelerometer/*/output
-basic.accelerometer/*/toolkit.xml
-/basic.accelerometer/*/doc
+social.twitter/*/output
+social.twitter/*/toolkit.xml
+/social.twitter/*/doc
 
 
 ## java excludes
