@@ -1,0 +1,64 @@
+namespace com.ibm.streamsx.social.twitter ;
+
+use com.ibm.streamsx.json::JSONToTuple ;
+use com.ibm.streamsx.json::TupleToJSON ;
+type RawJson = tuple<rstring jsonString> ;
+type ToBIJson = tuple<rstring jsonString> ;
+type User = tuple<rstring screen_name> ;
+type Retweeted_status = tuple<int32 retweet_count> ;
+type ExtractJson = tuple<RawJson rawJson, rstring stageRaw, rstring created_at, rstring deleted, rstring text,
+	User user, Retweeted_status retweeted_status, int32 retweet_count, rstring lang> ;
+type DisplayJson = tuple<rstring lang, rstring screen_name, int32 retweet_count, rstring text> ;
+
+composite SampleTwitter {
+	graph
+		stream<RawJson> TwitterSampleStream_Out = TwitterSampleStream(){
+			param
+			// You'll will need to  
+			//    get twitter developer account
+			//    create an application on twitter
+			//    using get sample/stream
+				consumerKey : getSubmissionTimeValue("consumerKey");
+				consumerSecret : getSubmissionTimeValue("consumerSecret");
+				accessToken : getSubmissionTimeValue("accessToken");
+				accessTokenSecret : getSubmissionTimeValue("accessTokenSecret");
+		}
+
+		stream<ExtractJson> JSONToTuple_Out = JSONToTuple(TwitterSampleStream_Out){
+			param
+				jsonStringOutputAttribute : "stageRaw" ;
+		}
+
+		(stream<ExtractJson> Filter_Out0 ; stream<ExtractJson> Filter_Out1)= Filter(JSONToTuple_Out){
+			param
+				filter :(length(created_at)> 0);
+		}
+
+		(stream<DisplayJson> Functor_Out)as Functor_4 = Functor(Filter_Out0){
+			output
+				Functor_Out : screen_name = user.screen_name, retweet_count = retweeted_status.retweet_count ;
+		}
+
+		(stream<ToBIJson> TupleToJSON_Out)as TupleToJSON_7 = TupleToJSON(Functor_Out){
+		}
+
+		()as FileSink_2 = FileSink(TupleToJSON_Out){
+			param
+			// file : "/tmp/twitterTest.txt" ;
+				file : "/dev/stdout" ;
+				format : line ;
+		}
+
+		()as FileSink_5 = FileSink(Filter_Out1){
+			param
+				file : "/tmp/delete.line" ;
+				format : csv ;
+		}
+
+		()as FileSink_8 = FileSink(TwitterSampleStream_Out){
+			param
+				file : "/tmp/tmp" ;
+		}
+
+}
+

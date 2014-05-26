@@ -1,0 +1,43 @@
+# streams-specific excludes
+toolkit.xml
+impl/nl/include/*.h
+*.pm
+# If you want to include a perl module, do
+# !foo.pm
+
+
+
+basic.accelerometer/*/output
+basic.accelerometer/*/toolkit.xml
+/basic.accelerometer/*/doc
+
+
+## java excludes
+*.class
+
+# exclude generated Java primitive operator model files
+*$StreamsModel.java
+
+# Package Files #
+social.twitter/lib/*.jar
+social.twitter/impl/lib/*.jar
+*.war
+*.ear
+
+## C++ excludes
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# temporary directories
+tmp
